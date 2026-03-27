@@ -36,8 +36,8 @@ const statusIcons: Record<string, string> = {
     <button
       v-if="interactive"
       class="mt-0.5 shrink-0 text-lg transition-transform hover:scale-125"
-      @click="emit('cycle-status', requirement)"
       :aria-label="`Cambiar estado de: ${requirement.title}`"
+      @click="emit('cycle-status', requirement)"
     >
       {{ statusIcons[requirement.status] ?? '⏳' }}
     </button>

@@ -2,18 +2,13 @@ package com.ideaforge.quickstart.controller;
 
 import com.ideaforge.quickstart.model.Requirement;
 import com.ideaforge.quickstart.service.RequirementService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * REST controller for {@link Requirement}.
- *   GET    /api/requirements            → list all
- *   GET    /api/requirements/{id}       → get one
- *   PATCH  /api/requirements/{id}/status → update status
+ * REST controller for {@link Requirement}. GET /api/requirements → list all GET
+ * /api/requirements/{id} → get one PATCH /api/requirements/{id}/status → update status
  */
 @RestController
 @RequestMapping("/api/requirements")

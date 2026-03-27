@@ -8,10 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/**
- * A product requirement seeded from PRD.json.
- * Tracks the status of each feature being built.
- */
+/** A product requirement seeded from PRD.json. Tracks the status of each feature being built. */
 @Entity
 @Table(name = "requirements")
 public class Requirement extends BaseEntity {
@@ -32,7 +29,9 @@ public class Requirement extends BaseEntity {
     private Status status = Status.PENDING;
 
     public enum Status {
-        PENDING, IN_PROGRESS, DONE
+        PENDING,
+        IN_PROGRESS,
+        DONE
     }
 
     public Requirement() {}
@@ -43,15 +42,35 @@ public class Requirement extends BaseEntity {
         this.priority = priority;
     }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getPriority() { return priority; }
-    public void setPriority(String priority) { this.priority = priority; }
+    public String getDescription() {
+        return description;
+    }
 
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

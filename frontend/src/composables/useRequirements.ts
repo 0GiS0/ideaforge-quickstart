@@ -17,8 +17,9 @@ export function useRequirements() {
     try {
       const { data } = await api.get<Requirement[]>('/api/requirements')
       requirements.value = data
-    } catch (e: any) {
-      error.value = e.response?.data?.message ?? 'Error al cargar requisitos'
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } }
+      error.value = err.response?.data?.message ?? 'Error al cargar requisitos'
     } finally {
       loading.value = false
     }

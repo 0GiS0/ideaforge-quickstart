@@ -5,18 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ideaforge.quickstart.model.Requirement;
 import com.ideaforge.quickstart.repository.RequirementRepository;
+import java.io.InputStream;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.InputStream;
-import java.util.List;
-
-/**
- * Seeds requirements from PRD.json on startup (only if DB is empty).
- */
+/** Seeds requirements from PRD.json on startup (only if DB is empty). */
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -51,8 +48,8 @@ public class DataLoader implements CommandLineRunner {
                 return;
             }
 
-            List<Requirement> requirements = mapper.convertValue(
-                    reqNode, new TypeReference<List<Requirement>>() {});
+            List<Requirement> requirements =
+                    mapper.convertValue(reqNode, new TypeReference<List<Requirement>>() {});
 
             repository.saveAll(requirements);
             log.info("Seeded {} requirements from PRD.json", requirements.size());

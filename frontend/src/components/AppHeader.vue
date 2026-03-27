@@ -5,9 +5,7 @@ import { RouterLink } from 'vue-router'
 <template>
   <header class="border-b border-gray-200 bg-white">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-      <RouterLink to="/" class="text-xl font-bold text-gray-900">
-        __APP_NAME__
-      </RouterLink>
+      <RouterLink to="/" class="text-xl font-bold text-gray-900"> __APP_NAME__ </RouterLink>
       <nav class="flex items-center gap-6">
         <RouterLink
           to="/"

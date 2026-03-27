@@ -2,15 +2,11 @@ package com.ideaforge.quickstart.service;
 
 import com.ideaforge.quickstart.model.Requirement;
 import com.ideaforge.quickstart.repository.RequirementRepository;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-/**
- * Business logic for {@link Requirement}.
- * Keep controllers thin — put logic here.
- */
+/** Business logic for {@link Requirement}. Keep controllers thin — put logic here. */
 @Service
 @Transactional
 public class RequirementService {
@@ -28,7 +24,8 @@ public class RequirementService {
 
     @Transactional(readOnly = true)
     public Requirement findById(Long id) {
-        return repository.findById(id)
+        return repository
+                .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Requirement", id));
     }
 
