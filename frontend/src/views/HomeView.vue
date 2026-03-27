@@ -93,9 +93,9 @@ async function cycleStatus(req: Requirement) {
         __APP_DESCRIPTION__
       </p>
 
-      <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm text-green-700">
+      <div v-if="health" class="mt-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm text-green-700">
         <span class="h-2 w-2 rounded-full bg-green-500"></span>
-        Backend conectado — v{{ health.version }}
+        Backend conectado — v{{ health?.version }}
       </div>
     </div>
 

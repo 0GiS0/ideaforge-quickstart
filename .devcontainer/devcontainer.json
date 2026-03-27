@@ -1,5 +1,5 @@
 {
-  "name": "IdeaForge Quickstart",
+  "name": "💡 IdeaForge Quickstart",
   "image": "mcr.microsoft.com/devcontainers/java:21-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
@@ -8,9 +8,21 @@
     },
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [8080, 5173, 80],
+  "portsAttributes": {
+    "8080": {
+      "label": "☕ Backend (Spring Boot)"
+    },
+    "5173": {
+      "label": "⚡ Frontend (Vite)"
+    },
+    "80": {
+      "label": "🐳 Frontend (Docker)"
     }
   },
-  "forwardPorts": [8080, 5173],
   "postCreateCommand": "cd frontend && npm install",
   "customizations": {
     "vscode": {
