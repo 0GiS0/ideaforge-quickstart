@@ -1,0 +1,36 @@
+# Docker Compose for LOCAL DEVELOPMENT with hot-reload.
+# Mounts source code as volumes so you can edit from your host/IDE.
+#
+# Usage:
+#   docker compose -f docker-compose.dev.yml up --build
+#
+# Requires: Docker (no Java or Node.js needed on the host)
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/pom.xml:/app/pom.xml
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tailwind.config.js:/app/tailwind.config.js
+      - ./frontend/postcss.config.js:/app/postcss.config.js
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+    depends_on:
+      - backend

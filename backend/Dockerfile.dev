@@ -1,0 +1,15 @@
+# ---------- Development Dockerfile ----------
+# Run with source code mounted as a volume for hot-reload:
+#   docker compose -f docker-compose.dev.yml up
+FROM maven:3.9-eclipse-temurin-21
+WORKDIR /app
+
+# Pre-download dependencies (cached unless pom.xml changes)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Source code will be mounted as a volume — not copied
+EXPOSE 8080
+
+# spring-boot:run enables DevTools hot-restart automatically
+CMD ["mvn", "spring-boot:run"]
