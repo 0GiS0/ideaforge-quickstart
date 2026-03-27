@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.ideaforge</groupId>
-    <artifactId>{{APP_NAME_KEBAB}}-backend</artifactId>
+    <artifactId>__APP_NAME_KEBAB__-backend</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>{{APP_NAME}} Backend</name>
-    <description>{{APP_DESCRIPTION}}</description>
+    <name>__APP_NAME__ Backend</name>
+    <description>__APP_DESCRIPTION__</description>
 
     <properties>
         <java.version>21</java.version>

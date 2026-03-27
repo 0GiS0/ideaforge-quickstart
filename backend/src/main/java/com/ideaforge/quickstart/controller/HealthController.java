@@ -18,7 +18,7 @@ public class HealthController {
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok(Map.of(
                 "status", "UP",
-                "app", "{{APP_NAME}}",
+                "app", "__APP_NAME__",
                 "version", "0.1.0"
         ));
     }

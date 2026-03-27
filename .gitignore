@@ -4,7 +4,6 @@ target/
 
 # IDE
 .idea/
-.vscode/
 *.iml
 
 # Build outputs

@@ -1,10 +1,10 @@
 {
-  "name": "{{APP_NAME_KEBAB}}-frontend",
+  "name": "__APP_NAME_KEBAB__-frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },

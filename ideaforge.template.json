@@ -1,26 +1,32 @@
 {
   "name": "spring-vue-fullstack",
   "description": "Full-stack template with Spring Boot 3 backend and Vue 3 frontend",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "placeholderFormat": "__PLACEHOLDER_NAME__",
   "placeholders": {
     "APP_NAME": {
       "description": "Application display name (e.g. Mesa Reserva)",
+      "placeholder": "__APP_NAME__",
       "example": "Mesa Reserva"
     },
     "APP_NAME_KEBAB": {
       "description": "Kebab-case name for repos and folders (e.g. mesa-reserva)",
+      "placeholder": "__APP_NAME_KEBAB__",
       "transform": "kebab-case"
     },
     "APP_NAME_PASCAL": {
       "description": "PascalCase name for Java classes (e.g. MesaReserva)",
+      "placeholder": "__APP_NAME_PASCAL__",
       "transform": "pascal-case"
     },
     "APP_DESCRIPTION": {
       "description": "Short description of the application",
+      "placeholder": "__APP_DESCRIPTION__",
       "example": "Restaurant reservation management app"
     },
     "PACKAGE_NAME": {
       "description": "Java package name (e.g. com.ideaforge.mesareserva)",
+      "placeholder": "__PACKAGE_NAME__",
       "transform": "java-package"
     }
   },

@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Backend (Spring Boot)",
+            "request": "launch",
+            "mainClass": "com.ideaforge.quickstart.Application",          
+            "cwd": "${workspaceFolder}/backend",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "default"
+            }
+        },        
+        {
+            "type": "node",
+            "name": "Frontend (Vite Dev Server)",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/frontend",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack (Backend + Frontend)",
+            "configurations": ["Backend (Spring Boot)", "Frontend (Vite Dev Server)"],
+            "stopAll": true
+        }
+    ]
+}
