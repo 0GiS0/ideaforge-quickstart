@@ -67,26 +67,20 @@ async function cycleStatus(req: Requirement) {
       Conectando con el backend...
     </div>
 
-    <!-- Wishlist preview (static, from PRD) -->
+    <!-- Requirements loaded from the API -->
     <div class="mx-auto mt-10 w-full max-w-md text-left">
       <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
         📋 Requisitos del proyecto
       </h2>
-      <ul class="space-y-2 opacity-75">
+      <div v-if="loading" class="py-4 text-center text-sm text-gray-400">Cargando requisitos...</div>
+      <ul v-else class="space-y-2 opacity-75">
         <li
-          v-for="(req, i) in [
-            'Página de inicio',
-            'Autenticación de usuarios',
-            'Panel de administración',
-            'API REST completa',
-            'Diseño responsive',
-            'Tests unitarios',
-          ]"
-          :key="i"
+          v-for="req in requirements"
+          :key="req.id"
           class="flex items-center gap-3 rounded-lg border border-dashed border-gray-300 bg-white/60 px-4 py-2.5 text-sm text-gray-500"
         >
           <span class="text-base">⏳</span>
-          {{ req }}
+          {{ req.title }}
         </li>
       </ul>
     </div>
