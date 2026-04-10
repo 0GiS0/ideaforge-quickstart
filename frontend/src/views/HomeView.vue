@@ -6,12 +6,23 @@ import type { HealthStatus, Requirement } from '../types'
 import RequirementCard from '../components/RequirementCard.vue'
 
 const health = ref<HealthStatus | null>(null)
+const healthLoading = ref(true)
 const { requirements, loading, fetchRequirements, updateStatus } = useRequirements()
 
 const doneCount = computed(() => requirements.value.filter((r) => r.status === 'DONE').length)
 const progress = computed(() =>
   requirements.value.length ? Math.round((doneCount.value / requirements.value.length) * 100) : 0,
 )
+
+// Show splash while building; once all requirements are DONE, show the real app
+const showSplash = computed(() => {
+  // Always show splash if still connecting or loading
+  if (healthLoading.value || loading.value) return true
+  // Show splash if no requirements are done yet (app is still being built)
+  if (doneCount.value === 0) return true
+  // Show the real app once at least one requirement is done
+  return false
+})
 
 onMounted(async () => {
   try {
@@ -20,6 +31,8 @@ onMounted(async () => {
     await fetchRequirements()
   } catch {
     // Backend not running yet — that's OK
+  } finally {
+    healthLoading.value = false
   }
 })
 
@@ -35,9 +48,9 @@ async function cycleStatus(req: Requirement) {
 </script>
 
 <template>
-  <!-- ☕ Splash — Always shown while app is taking shape -->
+  <!-- ☕ Splash — Shown while app is being built -->
   <div
-    v-if="true"
+    v-if="showSplash"
     class="flex min-h-[calc(100vh-73px)] flex-col items-center justify-center text-center"
   >
     <!-- Coffee cup -->
@@ -79,15 +92,15 @@ async function cycleStatus(req: Requirement) {
           :key="req.id"
           class="flex items-center gap-3 rounded-lg border border-dashed border-gray-300 bg-white/60 px-4 py-2.5 text-sm text-gray-500"
         >
-          <span class="text-base">⏳</span>
+          <span class="text-base">{{ req.status === 'DONE' ? '✅' : '⏳' }}</span>
           {{ req.title }}
         </li>
       </ul>
     </div>
   </div>
 
-  <!-- 🚀 App conectada — muestra requisitos reales del backend (oculto hasta que haya más que mostrar) -->
-  <div v-if="false">
+  <!-- 🚀 Real app — shown once requirements start getting done -->
+  <div v-else>
     <div class="mb-8 text-center">
       <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">__APP_NAME__</h1>
       <p class="mt-4 text-lg text-gray-600">__APP_DESCRIPTION__</p>
