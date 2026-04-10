@@ -1,0 +1,81 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "☕ Backend (Spring Boot)",
+            "request": "launch",
+            "mainClass": "com.ideaforge.quickstart.Application",
+            "cwd": "${workspaceFolder}/backend",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "default"
+            },
+            "console": "integratedTerminal",
+            "presentation": {
+                "hidden": false,
+                "group": " backend",
+                "order": 1
+            }
+        },
+         {
+            "type": "node",
+            "name": "🌐 Frontend (Vite Dev Server)",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_modules>/**"
+            ],
+            "serverReadyAction": {
+               "pattern": "Local:.+(https?://\\S+)",
+                "uriFormat": "%s",
+                "action": "startDebugging",
+                // "name": "🔍 Edge: Debug Frontend"
+                "name": "🌐 Launch Integrated Browser"
+            },
+           
+            "presentation": {
+                "hidden": false,
+                "group": "frontend",
+                "order": 1
+            }
+        },
+        {
+            "type": "msedge",
+            "name": "🔍 Edge: Debug Frontend",
+            "request": "launch",
+            "url": "http://localhost:5176",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/*",
+                "webpack:///./src/*": "${webRoot}/*"
+            },
+            "presentation": {
+                "hidden": true,
+                "group": "frontend",
+                "order": 2
+            }
+        },
+          {
+            "name": "🌐 Launch Integrated Browser",
+            "request": "launch",
+            "type": "editor-browser",
+            "url": "http://localhost:5176",
+            "webRoot": "${workspaceFolder}"
+        },            
+    ],
+    "compounds": [
+       {
+            "name": "🚀 Full Stack (Backend + Frontend)",
+            "configurations": [
+                "☕ Backend (Spring Boot)",
+                "🌐 Frontend (Vite Dev Server)"
+            ],
+            "stopAll": true
+        }
+    ]
+}
