@@ -1,8 +1,5 @@
 package com.ideaforge.quickstart.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ideaforge.quickstart.model.Requirement;
 import com.ideaforge.quickstart.repository.RequirementRepository;
 import java.io.InputStream;
@@ -12,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /** Seeds requirements from PRD.json on startup (only if DB is empty). */
 @Component
