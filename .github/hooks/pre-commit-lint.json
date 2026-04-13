@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": ".github/hooks/pre-commit-lint.sh",
+        "timeout": 60
+      }
+    ]
+  }
+}
