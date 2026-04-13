@@ -85,7 +85,9 @@ async function cycleStatus(req: Requirement) {
       <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
         📋 Requisitos del proyecto
       </h2>
-      <div v-if="loading" class="py-4 text-center text-sm text-gray-400">Cargando requisitos...</div>
+      <div v-if="loading" class="py-4 text-center text-sm text-gray-400">
+        Cargando requisitos...
+      </div>
       <ul v-else class="space-y-2 opacity-75">
         <li
           v-for="req in requirements"
