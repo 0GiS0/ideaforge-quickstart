@@ -36,6 +36,9 @@ services:
       - "5173:5173"
     volumes:
       - app-frontend:/app
+      # Anonymous volume keeps the image's pre-installed node_modules from
+      # being shadowed by the empty/synced app-frontend volume.
+      - /app/node_modules
     depends_on:
       - file-receiver
     restart: unless-stopped
@@ -48,7 +51,12 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - app-backend:/app/src
+      # Mount the whole project (not just /src) so pom.xml lands at /app/pom.xml
+      # where mvn expects it. The file-receiver writes into the same volume at
+      # /app/backend/* on its side, which appears here as /app/*.
+      - app-backend:/app
+      # Anonymous volume preserves the image's pre-warmed Maven cache.
+      - /root/.m2
     environment:
       - SPRING_PROFILES_ACTIVE=default
     depends_on:
