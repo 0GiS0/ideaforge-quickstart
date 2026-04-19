@@ -1,0 +1,17 @@
+{
+  "name": "ideaforge-file-receiver",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sidecar HTTP service that receives files and command exec requests from the IdeaForge runner and applies them to the shared frontend/backend volumes.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
