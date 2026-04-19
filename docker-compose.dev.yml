@@ -1,23 +1,32 @@
-# Docker Compose for LOCAL DEVELOPMENT with hot-reload.
-# Mounts source code as volumes so you can edit from your host/IDE.
+# Docker Compose for LOCAL DEVELOPMENT and IdeaForge runner.
+#
+# Architecture:
+#   - file-receiver: HTTP sidecar (port 3001) that drops files and runs
+#     commands inside the shared named volumes. This is how the IdeaForge
+#     server pushes source code into the running containers without needing
+#     host filesystem access (so it works on Azure Container Apps too).
+#   - frontend: Vite dev server, source code lives in the `app-frontend`
+#     named volume (written by file-receiver).
+#   - backend: Spring Boot dev server, source code lives in the `app-backend`
+#     named volume. Optional — only starts under the `backend` profile so
+#     templates without a Java backend can run frontend-only.
 #
 # Usage:
-#   docker compose -f docker-compose.dev.yml up --build
+#   docker compose -f docker-compose.dev.yml up -d                 # frontend only
+#   docker compose -f docker-compose.dev.yml --profile backend up  # full stack
 #
-# Requires: Docker (no Java or Node.js needed on the host)
+# Requires: Docker (no Java or Node.js needed on the host).
 
 services:
-  backend:
+  file-receiver:
     build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
+      context: ./file-receiver
     ports:
-      - "8080:8080"
+      - "3001:3001"
     volumes:
-      - ./backend/src:/app/src
-      - ./backend/pom.xml:/app/pom.xml
-    environment:
-      - SPRING_PROFILES_ACTIVE=default
+      - app-frontend:/app/frontend
+      - app-backend:/app/backend
+    restart: unless-stopped
 
   frontend:
     build:
@@ -26,11 +35,26 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/index.html:/app/index.html
-      - ./frontend/vite.config.ts:/app/vite.config.ts
-      - ./frontend/tailwind.config.js:/app/tailwind.config.js
-      - ./frontend/postcss.config.js:/app/postcss.config.js
-      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - app-frontend:/app
     depends_on:
-      - backend
+      - file-receiver
+    restart: unless-stopped
+
+  backend:
+    profiles: ["backend"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - app-backend:/app/src
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+    depends_on:
+      - file-receiver
+    restart: unless-stopped
+
+volumes:
+  app-frontend:
+  app-backend:

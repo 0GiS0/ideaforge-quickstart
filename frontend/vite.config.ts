@@ -13,10 +13,15 @@ export default defineConfig({
     devSourcemap: true,
   },
   server: {
-    port: 5176,
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // Inside Docker Compose the backend is reachable via its service DNS
+        // name. Outside Compose (e.g. running `npm run dev` directly on the
+        // host) override with VITE_API_PROXY_TARGET=http://localhost:8080.
+        target: process.env.VITE_API_PROXY_TARGET || 'http://backend:8080',
         changeOrigin: true,
       },
     },
