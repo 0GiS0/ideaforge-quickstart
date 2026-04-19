@@ -1,0 +1,72 @@
+name: 📦 File Receiver CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'file-receiver/**'
+      - '.github/workflows/file-receiver-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'file-receiver/**'
+      - '.github/workflows/file-receiver-ci.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: file-receiver
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v6
+
+      - name: 🟢 Set up Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: file-receiver/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔬 Syntax check
+        run: node --check index.js
+
+      - name: 🐳 Build Docker image
+        run: docker build -t ideaforge-file-receiver:ci .
+
+      - name: 🚦 Smoke test endpoints
+        run: |
+          mkdir -p /tmp/fe /tmp/be
+          docker run -d --rm --name fr-ci -p 13001:3001 \
+            -v /tmp/fe:/app/frontend \
+            -v /tmp/be:/app/backend \
+            ideaforge-file-receiver:ci
+          # Wait for the server to come up
+          for i in $(seq 1 20); do
+            if curl -fs http://localhost:13001/health > /dev/null; then break; fi
+            sleep 0.5
+          done
+          # /health
+          curl -fs http://localhost:13001/health | grep -q '"status":"ok"'
+          # /files: legitimate write succeeds
+          resp=$(curl -fs -X POST http://localhost:13001/files \
+            -H 'content-type: application/json' \
+            -d '{"files":[{"path":"frontend/src/test.txt","content":"hello"}]}')
+          echo "$resp" | grep -q '"written":\["frontend/src/test.txt"\]'
+          test "$(cat /tmp/fe/src/test.txt)" = "hello"
+          # /files: path traversal is rejected (207 partial)
+          resp=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:13001/files \
+            -H 'content-type: application/json' \
+            -d '{"files":[{"path":"../../etc/evil","content":"x"}]}')
+          test "$resp" = "207"
+          # /exec: rejects cwd outside allowed roots
+          resp=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:13001/exec \
+            -H 'content-type: application/json' \
+            -d '{"cwd":"/etc","command":"ls"}')
+          test "$resp" = "400"
+          docker stop fr-ci
