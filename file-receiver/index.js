@@ -8,23 +8,44 @@
 //   2. Execute one-off commands inside those volumes (e.g. `npm install`,
 //      `npx vite build --mode development` for build validation).
 //
-// Security: every path the runner sends is resolved against the allowed
-// roots (/app/frontend, /app/backend) and rejected if it escapes them.
-// This guards against a malicious agent trying to write arbitrary files
-// like /etc/passwd via path traversal.
+// Security hardening:
+//   - Path traversal: every path the runner sends is resolved against the
+//     allowed roots (/app/frontend, /app/backend) and rejected if it
+//     escapes them.
+//   - Command injection: /exec only runs commands from an explicit
+//     allow-list (npm, npx, node, mvn). Defense in depth in case the
+//     runner ever gets a malicious payload.
+//   - Rate limiting: /files and /exec are throttled per IP so a bug in
+//     the runner can't DoS the dev environment with an infinite loop.
 
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import { dirname, resolve, sep } from 'node:path'
 
 const PORT = Number(process.env.PORT || 3001)
 const ALLOWED_ROOTS = ['/app/frontend', '/app/backend']
+const ALLOWED_COMMANDS = new Set(['npm', 'npx', 'node', 'mvn'])
 
 const app = express()
 // Generated apps can be hundreds of KB across many files; bump the JSON
 // limit so the runner can drop a full project in one POST.
 app.use(express.json({ limit: '10mb' }))
+
+const writeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+})
+
+const execLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 30,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+})
 
 function resolveSafePath(rawPath) {
   // Strip a leading "frontend/" or "backend/" prefix so the runner can send
@@ -46,7 +67,7 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
-app.post('/files', async (req, res) => {
+app.post('/files', writeLimiter, async (req, res) => {
   const files = Array.isArray(req.body?.files) ? req.body.files : null
   if (!files) {
     return res.status(400).json({ error: 'Body must be { files: [{ path, content }] }' })
@@ -77,16 +98,24 @@ app.post('/files', async (req, res) => {
   res.json({ written })
 })
 
-app.post('/exec', (req, res) => {
+app.post('/exec', execLimiter, (req, res) => {
   const { cwd, command, args } = req.body || {}
   if (typeof command !== 'string' || !command) {
     return res.status(400).json({ error: 'Body must be { cwd, command, args? }' })
+  }
+  if (!ALLOWED_COMMANDS.has(command)) {
+    return res
+      .status(400)
+      .json({ error: `command must be one of: ${[...ALLOWED_COMMANDS].join(', ')}` })
   }
   if (typeof cwd !== 'string' || !ALLOWED_ROOTS.includes(cwd)) {
     return res.status(400).json({ error: `cwd must be one of: ${ALLOWED_ROOTS.join(', ')}` })
   }
   const argv = Array.isArray(args) ? args.map(String) : []
-  const child = spawn(command, argv, { cwd, env: process.env })
+  // shell:false (the default) ensures argv values are passed as a single
+  // argv vector to execvp — no shell interpolation, so even if argv items
+  // contain shell metacharacters they're treated as literal arguments.
+  const child = spawn(command, argv, { cwd, env: process.env, shell: false })
   let stdout = ''
   let stderr = ''
   child.stdout.on('data', d => {
@@ -106,4 +135,5 @@ app.post('/exec', (req, res) => {
 app.listen(PORT, () => {
   console.log(`file-receiver listening on :${PORT}`)
   console.log(`allowed roots: ${ALLOWED_ROOTS.join(', ')}`)
+  console.log(`allowed commands: ${[...ALLOWED_COMMANDS].join(', ')}`)
 })

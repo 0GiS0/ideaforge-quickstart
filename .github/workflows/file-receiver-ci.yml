@@ -12,6 +12,9 @@ on:
       - 'file-receiver/**'
       - '.github/workflows/file-receiver-ci.yml'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -67,6 +70,16 @@ jobs:
           # /exec: rejects cwd outside allowed roots
           resp=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:13001/exec \
             -H 'content-type: application/json' \
-            -d '{"cwd":"/etc","command":"ls"}')
+            -d '{"cwd":"/app/frontend","command":"ls"}')
           test "$resp" = "400"
+          # /exec: rejects commands outside the allow-list
+          resp=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:13001/exec \
+            -H 'content-type: application/json' \
+            -d '{"cwd":"/app/frontend","command":"rm","args":["-rf","/"]}')
+          test "$resp" = "400"
+          # /exec: allow-listed command runs (node --version)
+          resp=$(curl -fs -X POST http://localhost:13001/exec \
+            -H 'content-type: application/json' \
+            -d '{"cwd":"/app/frontend","command":"node","args":["--version"]}')
+          echo "$resp" | grep -q '"exitCode":0'
           docker stop fr-ci
