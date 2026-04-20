@@ -29,6 +29,9 @@ const ALLOWED_ROOTS = ['/app/frontend', '/app/backend']
 const ALLOWED_COMMANDS = new Set(['npm', 'npx', 'node', 'mvn'])
 
 const app = express()
+// Behind Caddy (or any cloud reverse proxy), X-Forwarded-For is set.
+// Trust one level of proxy so express-rate-limit reads the real client IP.
+app.set('trust proxy', 1)
 // Generated apps can be hundreds of KB across many files; bump the JSON
 // limit so the runner can drop a full project in one POST.
 app.use(express.json({ limit: '10mb' }))
